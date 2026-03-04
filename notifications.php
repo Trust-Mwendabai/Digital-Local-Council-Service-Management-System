@@ -26,7 +26,7 @@ $notifications = $stmt->fetchAll();
     <style>
         .notif-container {
             max-width: 800px;
-            margin: 40px auto;
+            margin: 0 auto;
         }
         .notif-item {
             padding: 24px;
@@ -38,51 +38,52 @@ $notifications = $stmt->fetchAll();
         .notif-icon {
             width: 48px;
             height: 48px;
-            background: white;
+            background: rgba(0,0,0,0.02);
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--secondary);
             flex-shrink: 0;
-            box-shadow: var(--shadow-sm);
         }
     </style>
 </head>
-<body class="animate-up">
-    <nav class="container navbar">
-        <a href="index.php" class="logo">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--secondary);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            DLC<span>SMS</span>
-        </a>
-        <div><a href="dashboard.php" class="btn btn-secondary">System Dashboard</a></div>
-    </nav>
+<body class="">
+    <div class="app-container">
+        <?php include 'includes/sidebar.php'; ?>
 
-    <main class="container notif-container">
-        <header style="margin-bottom: 40px;">
-            <h2 style="font-size: 2.5rem;">System Notifications</h2>
-            <p class="text-muted">Review latest updates from the council service registry.</p>
-        </header>
+        <div class="content-wrapper">
+            <?php include 'includes/header_dashboard.php'; ?>
+            
+            <main class="main-content animate-up">
+                <div class="notif-container">
+                    <header style="margin-bottom: 40px;">
+                        <h2 style="font-size: 2.5rem;">System Notifications</h2>
+                        <p class="text-muted">Review latest updates from the council service registry.</p>
+                    </header>
 
-        <?php if (empty($notifications)): ?>
-            <div class="glass-card" style="padding: 60px; text-align: center;">
-                <p class="text-muted" style="font-size: 1.1rem;">Your communication log is currently empty.</p>
-            </div>
-        <?php else: ?>
-            <?php foreach ($notifications as $notif): ?>
-                <div class="glass-card notif-item" style="<?= $notif['is_read'] ? 'opacity: 0.8;' : 'border-left: 4px solid var(--secondary);' ?>">
-                    <div class="notif-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                    </div>
-                    <div>
-                        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">
-                            <?= date('M d, Y • H:i', strtotime($notif['created_at'])) ?>
+                    <?php if (empty($notifications)): ?>
+                        <div class="glass-card" style="padding: 60px; text-align: center;">
+                            <p class="text-muted" style="font-size: 1.1rem;">Your communication log is currently empty.</p>
                         </div>
-                        <p style="font-size: 1.05rem; line-height: 1.5; color: var(--primary); font-weight: 500;"><?= h($notif['message']) ?></p>
-                    </div>
+                    <?php else: ?>
+                        <?php foreach ($notifications as $notif): ?>
+                            <div class="glass-card notif-item" style="<?= $notif['is_read'] ? 'opacity: 0.8;' : 'border-left: 4px solid var(--secondary);' ?>">
+                                <div class="notif-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">
+                                        <?= date('M d, Y • H:i', strtotime($notif['created_at'])) ?>
+                                    </div>
+                                    <p style="font-size: 1.05rem; line-height: 1.5; color: var(--primary); font-weight: 500;"><?= h($notif['message']) ?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </main>
+            </main>
+        </div>
+    </div>
 </body>
 </html>

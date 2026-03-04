@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         .profile-container {
             max-width: 600px;
-            margin: 60px auto;
+            margin: 0 auto;
             padding: 56px;
         }
         .profile-avatar {
@@ -58,40 +58,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body class="animate-up">
-    <nav class="container navbar">
-        <a href="index.php" class="logo">DLC<span>SMS</span></a>
-        <div><a href="dashboard.php" class="btn btn-secondary">Dashboard</a></div>
-    </nav>
+<body class="">
+    <div class="app-container">
+        <?php include 'includes/sidebar.php'; ?>
 
-    <main class="container">
-        <div class="glass-card profile-container">
-            <div class="profile-avatar"><?= strtoupper(substr($user['username'], 0, 1)) ?></div>
-            <header style="text-align: center; margin-bottom: 48px;">
-                <h2 style="font-size: 2rem;">Identity Profile</h2>
-                <p class="text-muted">Manage your digital citizen credentials.</p>
-            </header>
+        <div class="content-wrapper">
+            <?php include 'includes/header_dashboard.php'; ?>
+            
+            <main class="main-content animate-up">
+                <div class="glass-card profile-container">
+                    <div class="profile-avatar"><?= strtoupper(substr($user['username'], 0, 1)) ?></div>
+                    <header style="text-align: center; margin-bottom: 48px;">
+                        <h2 style="font-size: 2rem;">Identity Profile</h2>
+                        <p class="text-muted">Manage your digital citizen credentials.</p>
+                    </header>
 
-            <?php if($success): ?>
-                <div style="background: rgba(34, 197, 94, 0.1); color: var(--success); padding: 16px; border-radius: 12px; margin-bottom: 24px; text-align: center;"><?= $success ?></div>
-            <?php endif; ?>
+                    <?php if($success): ?>
+                        <div style="background: rgba(34, 197, 94, 0.1); color: var(--success); padding: 16px; border-radius: 12px; margin-bottom: 24px; text-align: center;"><?= $success ?></div>
+                    <?php endif; ?>
 
-            <form action="profile.php" method="POST">
-                <div class="form-group">
-                    <label class="form-label">Username (Immutable)</label>
-                    <input type="text" class="form-control" value="<?= h($user['username']) ?>" readonly style="background: #f1f5f9; cursor: not-allowed;">
+                    <form action="profile.php" method="POST">
+                        <div class="form-group">
+                            <label class="form-label">Username (Immutable)</label>
+                            <input type="text" class="form-control" value="<?= h($user['username']) ?>" readonly style="background: #f1f5f9; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Interface</label>
+                            <input type="email" name="email" class="form-control" value="<?= h($user['email']) ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Security Clearance</label>
+                            <input type="text" class="form-control" value="<?= strtoupper(h($user['role'])) ?>" readonly style="background: #f1f5f9; cursor: not-allowed;">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; height: 56px; margin-top: 24px;">Update Registry</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Email Interface</label>
-                    <input type="email" name="email" class="form-control" value="<?= h($user['email']) ?>" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Security Clearance</label>
-                    <input type="text" class="form-control" value="<?= strtoupper(h($user['role'])) ?>" readonly style="background: #f1f5f9; cursor: not-allowed;">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; height: 56px; margin-top: 24px;">Update Registry</button>
-            </form>
+            </main>
         </div>
-    </main>
+    </div>
 </body>
 </html>

@@ -63,6 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body class="animate-up">
+    <div style="position: fixed; top: 40px; left: 40px; z-index: 100;">
+        <a href="index.php" class="btn btn-secondary" style="padding: 10px 20px; border-radius: 12px; font-weight: 700; gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Portal
+        </a>
+    </div>
     <div class="glass-card auth-card">
         <div style="text-align: center; margin-bottom: 40px;">
             <a href="index.php" class="logo" style="justify-content: center; margin-bottom: 12px;">
