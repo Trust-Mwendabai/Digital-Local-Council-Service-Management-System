@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/db.php';
+require_once 'includes/functions.php';
 
 if (!is_logged_in()) {
     redirect('login.php');
@@ -49,21 +50,24 @@ $applications = $stmt->fetchAll();
                 </div>
 
                 <div class="grid-3" style="margin-bottom: 40px;">
-                    <div class="glass-card stat-box" style="padding: 24px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Applications Initiated</div>
-                        <div style="font-size: 2.25rem; font-weight: 800; color: var(--primary);"><?= count($applications) ?></div>
+                    <div class="glass-card stat-box primary">
+                        <div class="stat-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+                        <div class="stat-label">Applications Initiated</div>
+                        <div class="stat-value"><?= count($applications) ?></div>
                     </div>
                     <?php
                         $pending_count = 0;
                         foreach($applications as $app) if($app['status'] == 'pending') $pending_count++;
                     ?>
-                    <div class="glass-card stat-box" style="padding: 24px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Awaiting Adjudication</div>
-                        <div style="font-size: 2.25rem; font-weight: 800; color: var(--warning);"><?= $pending_count ?></div>
+                    <div class="glass-card stat-box warning">
+                        <div class="stat-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+                        <div class="stat-label">Awaiting Adjudication</div>
+                        <div class="stat-value"><?= $pending_count ?></div>
                     </div>
-                    <div class="glass-card stat-box" style="padding: 24px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Final Certifications</div>
-                        <div style="font-size: 2.25rem; font-weight: 800; color: var(--success);"><?= count($applications) - $pending_count ?></div>
+                    <div class="glass-card stat-box success">
+                        <div class="stat-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                        <div class="stat-label">Final Certifications</div>
+                        <div class="stat-value"><?= count($applications) - $pending_count ?></div>
                     </div>
                 </div>
 
@@ -76,30 +80,36 @@ $applications = $stmt->fetchAll();
                                 <a href="apply.php" class="btn btn-secondary">Initialize First Protocol</a>
                             </div>
                         <?php else: ?>
-                            <table class="main-table" style="width: 100%; border-collapse: collapse;">
-                                <thead>
-                                    <tr style="text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                        <th style="padding: 16px 10px;">Service Node</th>
-                                        <th style="padding: 16px 10px;">Category</th>
-                                        <th style="padding: 16px 10px;">Timestamp</th>
-                                        <th style="padding: 16px 10px;">Status</th>
-                                        <th style="padding: 16px 10px; text-align: right;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($applications as $app): ?>
-                                        <tr style="border-bottom: 1px solid rgba(0,0,0,0.02);">
-                                            <td style="padding: 20px 10px; font-weight: 700; color: var(--primary);"><?= h($app['service_name']) ?></td>
-                                            <td style="padding: 20px 10px;"><span style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem;"><?= h($app['category']) ?></span></td>
-                                            <td style="padding: 20px 10px; color: var(--text-muted); font-size: 0.9rem;"><?= date('M d, Y', strtotime($app['submitted_at'])) ?></td>
-                                            <td style="padding: 20px 10px;"><span class="status-pill status-<?= $app['status'] ?>"><?= h($app['status']) ?></span></td>
-                                            <td style="padding: 20px 10px; text-align: right;">
-                                                <a href="view_application.php?id=<?= $app['id'] ?>" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem; font-weight: 700;">View Node</a>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                            <div class="grid-3">
+                                <?php foreach ($applications as $app): ?>
+                                    <div class="glass-card data-card">
+                                        <div class="card-header">
+                                            <div>
+                                                <div class="card-subtitle"><?= h($app['category']) ?></div>
+                                                <div class="card-title"><?= h($app['service_name']) ?></div>
+                                            </div>
+                                            <span class="status-pill status-<?= $app['status'] ?>"><?= h($app['status']) ?></span>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="meta-info">
+                                                <div style="width: 20px; height: 20px; color: var(--secondary); background: rgba(37, 99, 235, 0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; padding: 4px;">
+                                                    <?= get_category_icon($app['category']) ?>
+                                                </div>
+                                                Submitted on <?= date('M d, Y', strtotime($app['submitted_at'])) ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-footer">
+                                            <div class="meta-info">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                                ID: #<?= str_pad($app['id'], 5, '0', STR_PAD_LEFT) ?>
+                                            </div>
+                                            <a href="view_application.php?id=<?= $app['id'] ?>" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem; font-weight: 700;">View Node</a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>

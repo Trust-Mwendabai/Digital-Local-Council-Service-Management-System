@@ -1,5 +1,6 @@
 <?php
 require_once 'auth_check.php';
+require_once '../includes/functions.php';
 
 // Fetch statistics
 $total_apps = $pdo->query("SELECT COUNT(*) FROM applications")->fetchColumn();
@@ -41,21 +42,25 @@ $applications = $stmt->fetchAll();
                 </header>
 
                 <div class="grid-4" style="margin-bottom: 40px;">
-                    <div class="glass-card stat-box" style="padding: 24px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Total Applications</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--primary); margin-top: 8px;"><?= $total_apps ?></div>
+                    <div class="glass-card stat-box primary">
+                        <div class="stat-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+                        <div class="stat-label">Total Applications</div>
+                        <div class="stat-value"><?= $total_apps ?></div>
                     </div>
-                    <div class="glass-card stat-box" style="padding: 24px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Awaiting Review</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--warning); margin-top: 8px;"><?= $pending_apps ?></div>
+                    <div class="glass-card stat-box warning">
+                        <div class="stat-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+                        <div class="stat-label">Awaiting Review</div>
+                        <div class="stat-value"><?= $pending_apps ?></div>
                     </div>
-                    <div class="glass-card stat-box" style="padding: 24px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Total Approved</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--success); margin-top: 8px;"><?= $approved_apps ?></div>
+                    <div class="glass-card stat-box success">
+                        <div class="stat-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                        <div class="stat-label">Total Approved</div>
+                        <div class="stat-value"><?= $approved_apps ?></div>
                     </div>
-                    <div class="glass-card stat-box" style="padding: 24px;">
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Active Citizens</div>
-                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary); margin-top: 8px;"><?= $total_users ?></div>
+                    <div class="glass-card stat-box secondary">
+                        <div class="stat-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+                        <div class="stat-label">Active Citizens</div>
+                        <div class="stat-value"><?= $total_users ?></div>
                     </div>
                 </div>
 
@@ -71,42 +76,45 @@ $applications = $stmt->fetchAll();
                 </div>
 
                 <div class="glass-card">
-                    <div style="padding: 40px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
-                            <h3 style="font-size: 1.5rem;">Recent Applications</h3>
-                            <a href="manage_applications.php" class="btn btn-secondary" style="font-size: 0.8rem; font-weight: 700;">View All</a>
+                <div style="padding: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                        <h3 style="font-size: 1.5rem;">Recent Applications</h3>
+                        <a href="manage_applications.php" class="btn btn-secondary" style="font-size: 0.8rem; font-weight: 700;">View All Registry</a>
+                    </div>
+                
+                    <div class="grid-3">
+                        <?php foreach($applications as $app): ?>
+                        <div class="glass-card data-card">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-subtitle"><?= h($app['category']) ?></div>
+                                    <div class="card-title"><?= h($app['service_name']) ?></div>
+                                </div>
+                                <span class="status-pill status-<?= $app['status'] ?>"><?= $app['status'] ?></span>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="meta-info" style="margin-bottom: 8px;">
+                                    <div style="width: 20px; height: 20px; color: var(--secondary); background: rgba(37, 99, 235, 0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; padding: 4px;">
+                                        <?= get_category_icon($app['category']) ?>
+                                    </div>
+                                    <strong style="font-size: 0.95rem;"><?= h($app['username']) ?></strong>
+                                </div>
+                                <div class="meta-info">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    <?= h($app['email']) ?>
+                                </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="meta-info">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    <?= date('M d, Y', strtotime($app['submitted_at'])) ?>
+                                </div>
+                                <a href="review_application.php?id=<?= $app['id'] ?>" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.8rem;">Review Node</a>
+                            </div>
                         </div>
-                    
-                        <table class="main-table" style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr style="text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                    <th style="padding: 16px 10px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">User Info</th>
-                                    <th style="padding: 16px 10px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Service Name</th>
-                                    <th style="padding: 16px 10px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Date Submitted</th>
-                                    <th style="padding: 16px 10px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Status</th>
-                                    <th style="padding: 16px 10px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; text-align: right;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach($applications as $app): ?>
-                                <tr style="border-bottom: 1px solid rgba(0,0,0,0.02);">
-                                    <td style="padding: 20px 10px;" data-label="User">
-                                        <div style="font-weight: 700; color: var(--primary);"><?= h($app['username']) ?></div>
-                                        <div style="font-size: 0.7rem; color: var(--text-muted);"><?= h($app['email']) ?></div>
-                                    </td>
-                                    <td style="padding: 20px 10px;" data-label="Service">
-                                        <div style="font-weight: 600;"><?= h($app['service_name']) ?></div>
-                                        <div style="font-size: 0.7rem; color: var(--secondary); font-weight: 700;"><?= strtoupper(h($app['category'])) ?></div>
-                                    </td>
-                                    <td style="padding: 20px 10px; font-size: 0.85rem; color: var(--text-muted);" data-label="Date"><?= date('M d, Y', strtotime($app['submitted_at'])) ?></td>
-                                    <td style="padding: 20px 10px;" data-label="Status"><span class="status-pill status-<?= $app['status'] ?>"><?= $app['status'] ?></span></td>
-                                    <td style="padding: 20px 10px; text-align: right;">
-                                        <a href="review_application.php?id=<?= $app['id'] ?>" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem; font-weight: 700;">Review</a>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </main>
