@@ -1,0 +1,151 @@
+<?php
+require_once 'auth_check.php';
+
+$app_id = $_GET['id'] ?? 0;
+
+$stmt = $pdo->prepare("
+    SELECT a.*, u.username, u.email, s.name as service_name, s.category 
+    FROM applications a 
+    JOIN users u ON a.user_id = u.id 
+    JOIN services s ON a.service_id = s.id 
+    WHERE a.id = ?
+");
+$stmt->execute([$app_id]);
+$app = $stmt->fetch();
+
+if (!$app) {
+    redirect('index.php');
+}
+
+$form_data = json_decode($app['form_data'], true);
+
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'];
+    $comment = trim($_POST['comment']);
+    
+    $status = 'pending';
+    if ($action === 'approve') $status = 'approved';
+    if ($action === 'reject') $status = 'rejected';
+    if ($action === 'request_info') $status = 'more_info';
+
+    $stmt = $pdo->prepare("UPDATE applications SET status = ?, admin_comment = ? WHERE id = ?");
+    if ($stmt->execute([$status, $comment, $app_id])) {
+        // Add notification
+        $notif_msg = "Application Status Update: Your request for {$app['service_name']} is now " . strtoupper($status);
+        $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+        $notif_stmt->execute([$app['user_id'], $notif_msg]);
+        
+        $success = "Application status synchronized to " . strtoupper($status);
+        // Refresh app data
+        $app['status'] = $status;
+        $app['admin_comment'] = $comment;
+    } else {
+        $error = "Failed to synchronize status with registry.";
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Protocol | DLCSMS Admin</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        .review-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 32px;
+        }
+        .data-item {
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .data-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 800;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .data-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body class="animate-up">
+    <nav class="container navbar">
+        <a href="../index.php" class="logo">DLC<span>SMS</span> <span style="font-size: 0.5em; background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; margin-left: 10px;">CORE</span></a>
+        <div style="display: flex; gap: 24px; align-items: center;">
+            <div style="font-weight: 700; color: var(--primary);"><?= h($_SESSION['username']) ?></div>
+            <a href="../logout.php" class="btn btn-secondary" style="padding: 10px 18px;">Exit Console</a>
+        </div>
+    </nav>
+
+    <main class="container admin-layout">
+        <aside>
+            <div class="glass-card" style="padding: 24px; position: sticky; top: 120px;">
+                 <a href="index.php" style="display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: var(--text-muted); font-weight: 600; border-radius: 12px;">Dashboard</a>
+                <a href="manage_applications.php" style="display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: var(--secondary); background: rgba(37, 99, 235, 0.05); font-weight: 700; border-radius: 12px; margin-top: 8px;">Applications</a>
+                <a href="manage_users.php" style="display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: var(--text-muted); font-weight: 600; border-radius: 12px; margin-top: 8px;">Citizens</a>
+                <a href="settings.php" style="display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: var(--text-muted); font-weight: 600; border-radius: 12px; margin-top: 8px;">Settings</a>
+            </div>
+        </aside>
+
+        <section>
+            <header style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 8px;">Review Protocol</h2>
+                    <p class="text-muted">Analyzing citizen telemetry for ID #<?= str_pad($app['id'], 5, '0', STR_PAD_LEFT) ?></p>
+                </div>
+                <span class="status-pill status-<?= $app['status'] ?>" style="font-size: 1rem; padding: 8px 20px;"><?= $app['status'] ?></span>
+            </header>
+
+            <?php if($success): ?>
+                <div style="background: rgba(34, 197, 94, 0.1); color: var(--success); padding: 20px; border-radius: 12px; margin-bottom: 32px; border: 1px solid rgba(34, 197, 94, 0.2);"><?= $success ?></div>
+            <?php endif; ?>
+
+            <div class="review-grid">
+                <div class="glass-card" style="padding: 40px;">
+                    <h3 style="margin-bottom: 32px;">Citizen Data</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="data-item"><div class="data-label">Legal Name</div><div class="data-value"><?= h($form_data['full_name'] ?? 'N/A') ?></div></div>
+                        <div class="data-item"><div class="data-label">ID / NRC</div><div class="data-value"><?= h($form_data['nrc_number'] ?? 'N/A') ?></div></div>
+                    </div>
+                    <div class="data-item"><div class="data-label">Service Node</div><div class="data-value"><?= h($app['service_name']) ?> (<?= h($app['category']) ?>)</div></div>
+                    <div class="data-item"><div class="data-label">Statement of Purpose</div><div class="data-value" style="font-size: 1rem; line-height: 1.6;"><?= nl2br(h($app['form_data'])) ?></div></div>
+                </div>
+
+                <div class="glass-card" style="padding: 40px;">
+                    <h3 style="margin-bottom: 32px;">Adjudication</h3>
+                    <form action="review_application.php?id=<?= $app_id ?>" method="POST">
+                        <div class="form-group">
+                            <label class="form-label">Admin Assessment</label>
+                            <textarea name="comment" class="form-control" rows="6" placeholder="Enter findings and feedback for the citizen..."><?= h($app['admin_comment']) ?></textarea>
+                        </div>
+                        <div style="display: grid; gap: 12px; margin-top: 32px;">
+                            <button name="action" value="approve" class="btn btn-primary" style="background: var(--success); height: 50px;">Approve Protocol</button>
+                            <button name="action" value="reject" class="btn btn-primary" style="background: var(--error); height: 50px;">Reject Protocol</button>
+                            <button name="action" value="request_info" class="btn btn-secondary" style="height: 50px;">Request More Info</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
