@@ -29,4 +29,42 @@ function get_category_icon($category) {
             return $default_svg;
     }
 }
+
+/**
+ * Dispatch internal and simulated external notifications
+ */
+function dispatch_notification($pdo, $user_id, $message, $subject = "Council Service Update") {
+    // 1. Internal Database Notification
+    $stmt = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+    $stmt->execute([$user_id, $message]);
+    
+    // 2. Fetch User Details for simulation
+    $stmt = $pdo->prepare("SELECT username, email FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+    
+    if (!$user) return false;
+
+    // 3. Simulate External Dispatch (Logging)
+    $log_dir = __DIR__ . '/../logs';
+    if (!is_dir($log_dir)) {
+        mkdir($log_dir, 0777, true);
+    }
+    $log_file = $log_dir . '/communications.log';
+    
+    $timestamp = date('Y-m-d H:i:s');
+    $log_entry = "[$timestamp]\n";
+    $log_entry .= "CHANNEL: EMAIL\n";
+    $log_entry .= "TO: {$user['email']}\n";
+    $log_entry .= "SUBJECT: $subject\n";
+    $log_entry .= "BODY: $message\n";
+    $log_entry .= "CHANNEL: SMS\n";
+    $log_entry .= "TO: +260 (Council-Verified-MSISDN)\n";
+    $log_entry .= "MSG: $message\n";
+    $log_entry .= "--------------------------------------------------\n";
+    
+    file_put_contents($log_file, $log_entry, FILE_APPEND);
+    
+    return true;
+}
 ?>

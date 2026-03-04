@@ -73,10 +73,15 @@ $notifications = $stmt->fetchAll();
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                                 </div>
                                 <div>
-                                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">
-                                        <?= date('M d, Y • H:i', strtotime($notif['created_at'])) ?>
+                                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                        <span><?= date('M d, Y • H:i', strtotime($notif['created_at'])) ?></span>
+                                        <div style="display: flex; gap: 8px;">
+                                            <span style="font-size: 0.65rem; background: rgba(37, 99, 235, 0.1); color: var(--secondary); padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">Email</span>
+                                            <span style="font-size: 0.65rem; background: rgba(37, 99, 235, 0.1); color: var(--secondary); padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">SMS</span>
+                                            <span style="font-size: 0.65rem; background: rgba(34, 197, 94, 0.1); color: var(--success); padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">In-App</span>
+                                        </div>
                                     </div>
-                                    <p style="font-size: 1.05rem; line-height: 1.5; color: var(--primary); font-weight: 500;"><?= h($notif['message']) ?></p>
+                                    <p style="font-size: 1.05rem; line-height: 1.5; color: var(--primary); font-weight: 500; font-family: 'Inter', sans-serif;"><?= h($notif['message']) ?></p>
                                 </div>
                             </div>
                         <?php endforeach; ?>

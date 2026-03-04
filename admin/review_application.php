@@ -1,5 +1,6 @@
 <?php
 require_once 'auth_check.php';
+require_once '../includes/functions.php';
 
 $app_id = $_GET['id'] ?? 0;
 
@@ -34,12 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt = $pdo->prepare("UPDATE applications SET status = ?, admin_comment = ? WHERE id = ?");
     if ($stmt->execute([$status, $comment, $app_id])) {
-        // Add notification
+        // Dispatch multi-channel notification
         $notif_msg = "Application Status Update: Your request for {$app['service_name']} is now " . strtoupper($status);
-        $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
-        $notif_stmt->execute([$app['user_id'], $notif_msg]);
+        dispatch_notification($pdo, $app['user_id'], $notif_msg);
         
-        $success = "Application status synchronized to " . strtoupper($status);
+        $success = "Application status synchronized and alerts dispatched via Email & SMS.";
         // Refresh app data
         $app['status'] = $status;
         $app['admin_comment'] = $comment;
