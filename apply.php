@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/db.php';
+require_once 'includes/functions.php';
 
 if (!is_logged_in()) {
     redirect('login.php');
@@ -33,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($stmt->execute([$user_id, $service_id, $json_data])) {
             $success = 'Application Protocol Initialized Successfully.';
-            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
-            $notif_stmt->execute([$user_id, "Protocol started: Your application has been logged for council review."]);
+            log_activity($pdo, $user_id, 'Application Submitted', "Citizen initialized protocol for Service ID #$service_id.");
+            dispatch_notification($pdo, $user_id, "Protocol started: Your application has been logged for council review.", "Application Received");
         } else {
             $error = 'Failed to initialize protocol. Registry error.';
         }

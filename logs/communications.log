@@ -7,3 +7,93 @@ CHANNEL: SMS
 TO: +260 (Council-Verified-MSISDN)
 MSG: Application Status Update: Your request for Birth Certificate Registration is now APPROVED
 --------------------------------------------------
+[2026-03-04 07:05:11]
+CHANNEL: EMAIL
+TO: jane@example.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+--------------------------------------------------
+[2026-03-04 07:05:25]
+CHANNEL: EMAIL
+TO: jane@example.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+--------------------------------------------------
+[2026-03-04 07:05:31]
+CHANNEL: EMAIL
+TO: jane@example.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+--------------------------------------------------
+[2026-03-04 07:05:35]
+CHANNEL: EMAIL
+TO: jane@example.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+--------------------------------------------------
+[2026-03-04 07:05:38]
+CHANNEL: EMAIL
+TO: jane@example.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Marriage Certificate is now MORE_INFO
+--------------------------------------------------
+[2026-03-04 07:15:17]
+CHANNEL: EMAIL
+TO: user1@gmail.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Business Permit is now MORE_INFO
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Business Permit is now MORE_INFO
+--------------------------------------------------
+[2026-03-04 07:15:47]
+CHANNEL: EMAIL
+TO: user1@gmail.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Business Permit is now MORE_INFO
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Business Permit is now MORE_INFO
+--------------------------------------------------
+[2026-03-04 07:18:44]
+CHANNEL: EMAIL
+TO: user1@gmail.com
+SUBJECT: Application Revised
+BODY: Application Revised: Your update for Business Permit has been sent back to pending status for review.
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Revised: Your update for Business Permit has been sent back to pending status for review.
+--------------------------------------------------
+[2026-03-04 07:19:29]
+CHANNEL: EMAIL
+TO: user1@gmail.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Business Permit is now APPROVED
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Business Permit is now APPROVED
+--------------------------------------------------
+[2026-03-04 07:21:41]
+CHANNEL: EMAIL
+TO: user1@gmail.com
+SUBJECT: Council Service Update
+BODY: Application Status Update: Your request for Business Permit is now APPROVED
+CHANNEL: SMS
+TO: +260 (Council-Verified-MSISDN)
+MSG: Application Status Update: Your request for Business Permit is now APPROVED
+--------------------------------------------------

@@ -67,4 +67,18 @@ function dispatch_notification($pdo, $user_id, $message, $subject = "Council Ser
     
     return true;
 }
+
+/**
+ * Log activity to the database for auditing
+ */
+function log_activity($pdo, $user_id, $action, $details = null) {
+    try {
+        $ip_address = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $stmt = $pdo->prepare("INSERT INTO activity_logs (user_id, action, details, ip_address) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$user_id, $action, $details, $ip_address]);
+    } catch (PDOException $e) {
+        // Silently fail to not break the user experience if logging fails
+        return false;
+    }
+}
 ?>

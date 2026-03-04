@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/db.php';
+require_once 'includes/functions.php';
 
 if (is_logged_in()) {
     if ($_SESSION['role'] === 'admin') {
@@ -29,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role'] = $user['role'];
 
             if ($user['role'] === 'admin') {
-                redirect('admin/index.php');
-            } else {
+                log_activity($pdo, $user['id'], 'User Login', 'Successful authentication into ' . $user['role'] . ' workspace.');
                 redirect('dashboard.php');
             }
         } else {
+            log_activity($pdo, null, 'Failed Login Attempt', "Username/Email used: $login");
             $error = 'Invalid username/email or password.';
         }
     }
@@ -97,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <input type="password" name="password" class="form-control" required placeholder="••••••••">
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; height: 52px; font-size: 1.05rem;">Sign In to Console</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%; height: 52px; font-size: 1.05rem;">Sign In to Dashboard</button>
         </form>
 
         <div style="text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.05);">

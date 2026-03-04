@@ -1,7 +1,7 @@
 <?php
 // header.php - Modular header component
 $role = $_SESSION['role'] ?? 'user';
-$portal_name = ($role === 'admin') ? 'Admin Registry' : 'Citizen Console';
+$portal_name = ($role === 'admin') ? 'Admin Registry' : 'Citizen Dashboard';
 ?>
 <nav class="navbar">
     <div style="font-weight: 700; color: var(--text-muted);"><?= h($portal_name) ?></div>

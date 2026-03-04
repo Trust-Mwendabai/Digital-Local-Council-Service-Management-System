@@ -39,7 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $notif_msg = "Application Status Update: Your request for {$app['service_name']} is now " . strtoupper($status);
         dispatch_notification($pdo, $app['user_id'], $notif_msg);
         
-        $success = "Application status synchronized and alerts dispatched via Email & SMS.";
+        log_activity($pdo, $_SESSION['user_id'], 'Application Review', "ID #$app_id status changed to $status by Admin.");
+        
+        $success = "Application status synchronized and alerts dispatched.";
         // Refresh app data
         $app['status'] = $status;
         $app['admin_comment'] = $comment;

@@ -18,13 +18,46 @@ $stmt = $pdo->query("
     LIMIT 5
 ");
 $applications = $stmt->fetchAll();
+
+// Fetch Operational Telemetry (Phase 22)
+// Average turnaround time in hours per category
+$telemetry_stmt = $pdo->query("
+    SELECT s.category, AVG(TIMESTAMPDIFF(HOUR, a.submitted_at, a.updated_at)) as avg_hours 
+    FROM applications a 
+    JOIN services s ON a.service_id = s.id 
+    WHERE a.status IN ('approved', 'rejected') 
+    GROUP BY s.category
+");
+$telemetry_data = $telemetry_stmt->fetchAll();
+
+$categories = [];
+$avg_times = [];
+foreach ($telemetry_data as $row) {
+    $categories[] = $row['category'];
+    $avg_times[] = round($row['avg_hours'], 1);
+}
+
+// Fetch Service Distribution (Phase 23)
+$dist_stmt = $pdo->query("
+    SELECT s.category, COUNT(*) as count 
+    FROM applications a 
+    JOIN services s ON a.service_id = s.id 
+    GROUP BY s.category
+");
+$dist_data = $dist_stmt->fetchAll();
+$dist_labels = [];
+$dist_counts = [];
+foreach ($dist_data as $row) {
+    $dist_labels[] = $row['category'];
+    $dist_counts[] = $row['count'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Console | DLCSMS Admin Overview</title>
+    <title>Dashboard | DLCSMS Admin Overview</title>
     <link rel="stylesheet" href="../assets/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -64,14 +97,21 @@ $applications = $stmt->fetchAll();
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 40px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 40px;">
                     <div class="glass-card" style="padding: 32px;">
-                        <h3 style="margin-bottom: 24px; font-size: 1.25rem;">Application Progress</h3>
-                        <canvas id="growthChart" height="200"></canvas>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                            <h3 style="font-size: 1.25rem;">Efficiency Telemetry</h3>
+                            <span style="font-size: 0.7rem; font-weight: 800; color: var(--secondary); background: rgba(37, 99, 235, 0.1); padding: 4px 12px; border-radius: 20px;">Avg Hours</span>
+                        </div>
+                        <div style="height: 250px; position: relative; overflow: hidden;">
+                            <canvas id="efficiencyChart"></canvas>
+                        </div>
                     </div>
                     <div class="glass-card" style="padding: 32px;">
                         <h3 style="margin-bottom: 24px; font-size: 1.25rem;">Service Distribution</h3>
-                        <canvas id="serviceChart" height="200"></canvas>
+                        <div style="height: 250px; position: relative; overflow: hidden;">
+                            <canvas id="serviceChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -122,25 +162,34 @@ $applications = $stmt->fetchAll();
     </div>
 
     <script>
-        const growthCtx = document.getElementById('growthChart').getContext('2d');
-        new Chart(growthCtx, {
-            type: 'line',
+        const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
+        new Chart(efficiencyCtx, {
+            type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: <?= json_encode($categories) ?>,
                 datasets: [{
-                    label: 'Applications',
-                    data: [12, 19, 13, 25, 22, 30],
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    fill: true,
-                    tension: 0.4
+                    label: 'Hours',
+                    data: <?= json_encode($avg_times) ?>,
+                    backgroundColor: '#2563eb',
+                    borderRadius: 8,
+                    barThickness: 32
                 }]
             },
             options: {
+                indexAxis: 'y',
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
+                scales: { 
+                    x: { 
+                        beginAtZero: true,
+                        grid: { display: false },
+                        title: { display: true, text: 'Hours', font: { weight: 'bold' } }
+                    },
+                    y: { 
+                        grid: { display: false }
+                    }
+                }
             }
         });
 
@@ -148,15 +197,23 @@ $applications = $stmt->fetchAll();
         new Chart(serviceCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Permits', 'Certificates', 'Business'],
+                labels: <?= json_encode($dist_labels) ?>,
                 datasets: [{
-                    data: [45, 25, 30],
-                    backgroundColor: ['#2563eb', '#06b6d4', '#475569']
+                    data: <?= json_encode($dist_counts) ?>,
+                    backgroundColor: ['#2563eb', '#06b6d4', '#475569', '#8b5cf6', '#ec4899', '#f59e0b'],
+                    borderWidth: 0,
+                    hoverOffset: 20
                 }]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'bottom' } }
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { 
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 15, font: { weight: '600', size: 10 } }
+                    }
+                }
             }
         });
     </script>

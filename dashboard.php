@@ -29,7 +29,7 @@ $applications = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Console | DLCSMS Dashboard</title>
+    <title>Dashboard | DLCSMS</title>
     <link rel="stylesheet" href="assets/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -43,7 +43,7 @@ $applications = $stmt->fetchAll();
             <main class="main-content animate-up">
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
                     <div>
-                        <h2 style="font-size: 2.5rem; margin-bottom: 8px;">Citizen Console</h2>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 8px;">Citizen Dashboard</h2>
                         <p class="text-muted">Welcome back to your digital council interface.</p>
                     </div>
                     <a href="apply.php" class="btn btn-primary" style="padding: 16px 32px; border-radius: 12px; font-weight: 700;">New Application</a>
